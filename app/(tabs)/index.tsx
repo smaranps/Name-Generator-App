@@ -1,63 +1,153 @@
-import { Image, StyleSheet, Platform } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { useState } from "react";
+import { View, StyleSheet, Text, Alert, TouchableOpacity } from "react-native";
+import * as Clipboard from "expo-clipboard";
 
 export default function HomeScreen() {
+  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
+
+  const generate = async () => {
+    try {
+      let response = await fetch(
+        "https://dfm3s90j-3000.use.devtunnels.ms/generatepassword"
+      );
+      let data = await response.text();
+      console.log("Response" + response);
+      console.log("Data:" + data);
+      setPassword(data);
+    } catch (error) {
+      Alert.alert("There is an error while generating" + error);
+    }
+  };
+  const generateUser = async () => {
+    try {
+      let responseUser = await fetch(
+        "https://dfm3s90j-3000.use.devtunnels.ms/generateusername"
+      );
+      let dataUser = await responseUser.text();
+      console.log("Response" + responseUser);
+      console.log("Data:" + dataUser);
+      setUsername(dataUser);
+    } catch (error) {
+      Alert.alert("There is an error while generating" + error);
+    }
+  };
+  const copyPaste = async () => {
+    await Clipboard.setStringAsync(password);
+  };
+  const copyPasteUser = async () => {
+    await Clipboard.setStringAsync(username);
+  };
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <View
+      style={{ flex: 1, justifyContent: "center", backgroundColor: "#CDC1FF" }}
+    >
+      <View
+        style={{
+          backgroundColor: "#000957",
+          padding: 30,
+          width: "80%",
+          height: "60%",
+          justifyContent: "center",
+          alignItems: "center",
+          margin: "auto",
+          borderRadius: 25,
+        }}
+      >
+        <Text
+          style={{
+            textAlign: "center",
+            fontSize: 40,
+            fontFamily: "Verdana",
+            color: "white",
+          }}
+        >
+          Password Generator
+        </Text>
+        <View style={{ padding: 10, width: "100%", marginTop: 20 }}>
+          <Text
+            style={{
+              textAlign: "center",
+              fontSize: 20,
+              fontFamily: "Verdana",
+              color: "white",
+            }}
+          >
+            {password}
+          </Text>
+
+          <TouchableOpacity onPress={generate}>
+            <Text
+              style={{
+                fontSize: 20,
+                color: "#500073",
+                fontFamily: "Verdana",
+                textAlign: "center",
+              }}
+            >
+              Generate Password
+            </Text>{" "}
+          </TouchableOpacity>
+          <TouchableOpacity onPress={copyPaste} disabled={password === ""}>
+            <Text
+              style={{
+                fontSize: 20,
+
+                color: "#FFEB00",
+                textAlign: "center",
+              }}
+            >
+              Copy Password
+            </Text>
+          </TouchableOpacity>
+          <Text
+            style={{
+              textAlign: "center",
+              fontSize: 20,
+              fontFamily: "Verdana",
+              color: "white",
+              marginTop: 30,
+            }}
+          >
+            {username}
+          </Text>
+          <TouchableOpacity onPress={generateUser}>
+            <Text
+              style={{
+                fontSize: 20,
+                color: "#500073",
+                fontFamily: "Verdana",
+                textAlign: "center",
+              }}
+            >
+              Generate name
+            </Text>{" "}
+            <TouchableOpacity
+              onPress={copyPasteUser}
+              disabled={username === ""}
+            >
+              <Text
+                style={{
+                  fontSize: 20,
+                  marginTop: 5,
+                  color: "#FFEB00",
+                  textAlign: "center",
+                }}
+              >
+                Copy Username
+              </Text>
+            </TouchableOpacity>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
   stepContainer: {
@@ -69,6 +159,6 @@ const styles = StyleSheet.create({
     width: 290,
     bottom: 0,
     left: 0,
-    position: 'absolute',
+    position: "absolute",
   },
 });
